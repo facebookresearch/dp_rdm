@@ -27,6 +27,8 @@ The `rdm.util.aggregate_and_noise` function in Python manipulates a set of embed
 ## 3. DP-RDM Privacy Analysis
 The `experiments_utils.calc_eps` function calculates the differential privacy budget, denoted as epsilon , and identifies the optimal order of Rényi divergence (alpha) using the Rényi Differential Privacy (RDP) accountant method. It inputs the standard deviation of Gaussian noise, subsample rate, the number of nearest neighbors (k), the total number of queries, and the target delta of differential privacy. It then adjusts the noise multiplier based on global sensitivity, evaluates the privacy loss over specified orders of alpha, and returns the minimum epsilon and the corresponding alpha. 
 
+# RDM
+The code components of DP-RDM were built as an extension of Retrieval-Augmented Diffusion Models.
 
 [**Retrieval-Augmented Diffusion Models**](https://arxiv.org/abs/2204.11824)<br/>
 [Andreas Blattmann](https://github.com/ablattmann)\*,
