@@ -1,0 +1,35 @@
+data:
+  target: main.DataModuleFromConfig
+  params:
+    num_workers: 0
+    batch_size: 5
+    train:
+      target: rdm.data.base.QueryDataset
+      params:
+        k: 20
+        dset_config:
+          target: rdm.data.mscoco.MSCOCO
+          params:
+            root: /datasets01/COCO/022719/train2017
+            annFile: /datasets01/COCO/022719/annotations/captions_train2017.json
+            size: 256
+    validation:
+      target: rdm.data.base.QueryDataset
+      params:
+        k: 20
+        dset_config:
+          target: rdm.data.mscoco.MSCOCO
+          params:
+            root: /datasets01/COCO/022719/val2017
+            annFile: /datasets01/COCO/022719/annotations/captions_val2017.json
+            size: 256
+    test:
+      target: rdm.data.base.QueryDataset
+      params:
+        k: 20
+        dset_config:
+          target: rdm.data.mscoco.MSCOCO
+          params:
+            root: /datasets01/COCO/022719/test2017
+            annFile: /datasets01/COCO/022719/annotations/captions_test2017.json
+            size: 256

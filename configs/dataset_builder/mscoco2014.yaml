@@ -1,0 +1,27 @@
+builder:
+  target: rdm.data.retrieval_dataset.dsetbuilder.DatasetBuilder
+  params:
+    patch_size: 256
+    batch_size: 100
+    k: 20
+    save: True
+    num_workers: 24
+    img_size: [256,256]
+    gpu: True
+    patch_sampling: aligned
+    db_engine: faiss
+    retriever_config:
+      target: rdm.modules.retrievers.ClipImageRetriever
+      params:
+        #clip_type: clip
+        #model: ViT-B/32
+        clip_type: open_clip
+        pretrained: models/metaclip/b16_400m.pt
+        model: ViT-B-16-quickgelu
+        device: cuda
+    data:
+      target: rdm.data.mscoco.MSCOCO
+      params:
+        root: /datasets01/COCO/060817/train2014/
+        annFile: /datasets01/COCO/060817/annotations/captions_train2014.json
+        size: 256
