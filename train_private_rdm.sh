@@ -30,5 +30,4 @@ resume_training_model() {
         --job_dir $job_dir \
         --resume $last_ckpt
 }
-#train_model "in64fb_sig0_noagg"
-#train_model "in64fb_sig0.05_agg"
+train_model "in64fb_sig0.05_agg"

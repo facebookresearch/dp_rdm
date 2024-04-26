@@ -18,18 +18,17 @@ preproc = transforms.Compose([
     transforms.CenterCrop(256),
     transforms.ToTensor()])
 
-JOB_NAME = 'shutter_clip'
+JOB_NAME = 'retrieval_clip'
 WDS_BATCH_SIZE = 4000
-PARENT_FOLDER = '/fsx-shutterstock-image/dataset/first_cleaned/ss-photo-bucket/webdataset_512/'
+PARENT_FOLDER = '/path/to/webdataset_512/'
 FOLDER_PFX = 'meta_sstk_non_vector_non_editorial_non_model_release_non_mature_images_metadata.csv.gz'
-SHUTTERSTOCK_WDS_PATH = PARENT_FOLDER + FOLDER_PFX + '_{0..7}_{0..7}_{0..1}.csv/{000000..000376}.tar'
 
 def get_parser():
     parser = argparse.ArgumentParser(
-        description="RDM Shutterstock-CLIP"
+        description="RDM Retrieval-CLIP"
     )
     # npz path
-    parser.add_argument("--npz_path", default='/data/home/lebensold/checkpoint/shutterstock_npz', type=str, help="")
+    parser.add_argument("--npz_path", default='/data/home/lebensold/checkpoint/webdataset_npz', type=str, help="")
     parser.add_argument("--clip_pretrained", default="models/metaclip/b16_400m.pt", help="CLIP model to load", type=str)
     # clip_type = clip
     parser.add_argument("--clip_type", default="open_clip", help="CLIP type", type=str)

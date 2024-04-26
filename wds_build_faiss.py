@@ -1,4 +1,4 @@
-from shutterstock_utils import build_faiss_index, init_index, NUM_FILES
+from retrieval_utils import build_faiss_index, init_index, NUM_FILES
 import os
 import argparse
 
@@ -8,11 +8,11 @@ from rdm.util import print_args, get_shared_folder, get_init_file
 
 import time 
 
-JOB_NAME = 'shutter_clip'
+JOB_NAME = 'retrieval_clip'
 
 def get_parser():
     parser = argparse.ArgumentParser(
-        description="RDM Shutterstock-FAISS"
+        description="RDM Retrieval-FAISS"
     )
 
     # clip model = ViT-B/32
@@ -48,8 +48,6 @@ if __name__ == "__main__":
     os.environ["MASTER_ADDR"] = "localhost"
     os.environ["MASTER_PORT"] = "29500"
     
-    # if args.sample_folder == "":
-    #     args.sample_folder = "output/samples/" + str(time.time()).split(".")[0]
     print_args(args)
 
 

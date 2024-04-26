@@ -91,7 +91,7 @@ data:
       target: rdm.data.base.QueryDataset
       params:
         k: 4
-        nns: neighbors/1281167p-ClipImageRetriever_256@ImageNetTrainFaceBlurred/ImageNetTrainFaceBlurred/nn_paths.p
+        nns: /private/home/lebensold/dev/private-augmented-retrieval/neighbors/1281167p-ClipImageRetriever_256@ImageNetTrainFaceBlurred/ImageNetTrainFaceBlurred/nn_paths.p
         n_patches_per_side: 1
         load_patches: false
         dset_config:
@@ -103,7 +103,7 @@ data:
       target: rdm.data.base.QueryDataset
       params:
         k: 4
-        nns: neighbors/1281167p-ClipImageRetriever_256@ImageNetTrainFaceBlurred/ImageNetValidationFaceBlurred/nn_paths.p
+        nns: /private/home/lebensold/dev/private-augmented-retrieval/neighbors/1281167p-ClipImageRetriever_256@ImageNetTrainFaceBlurred/ImageNetValidationFaceBlurred/nn_paths.p
         n_patches_per_side: 1
         load_patches: false
         dset_config:

@@ -12,12 +12,12 @@ import io
 import faiss
 to_pil = transforms.ToPILImage()
 NUM_FILES = 239_000_000
-SHUTTERSTOCK_PARENT_FOLDER = '/fsx-shutterstock-image/dataset/first_cleaned/ss-photo-bucket/webdataset_512/'
-SHUTTERSTOCK_FOLDER_PFX = 'meta_sstk_non_vector_non_editorial_non_model_release_non_mature_images_metadata.csv.gz'
+WEBDATASET_PARENT_FOLDER = '/path/to/webdataset_512/'
+WEBDATASET_FOLDER_PFX = 'webdataset_folder_prefix.csv.gz'
 
 
-SHUTTERSTOCK_NPZ_METACLIP_BASEPATH = '/checkpoint/lebensold/shutterstock_npz'
-SHUTTERSTOCK_NPZ_INDEX_PATH = '/checkpoint/lebensold/shutterstock_files_index_239000000.npz'
+WEBDATASET_NPZ_METACLIP_BASEPATH = '/path/to/WEBDATASET_npz'
+WEBDATASET_NPZ_INDEX_PATH = '/path/to/WEBDATASET_files_index.npz'
 
 def parse_fname(fname):
     fname_split = fname.split('/')
@@ -27,12 +27,12 @@ def load_shard_part_npz(shard_no, part_no, subpart_no, file_no, basepath):
     path = f'{basepath}/{shard_no}_{part_no}_{subpart_no}/{file_no:06}.npz'
     return np.load(path)['arr_0']
 
-def load_embedding_from_idx(idx, npz_index_path=SHUTTERSTOCK_NPZ_INDEX_PATH):
+def load_embedding_from_idx(idx, npz_index_path=WEBDATASET_NPZ_INDEX_PATH):
     file_index = load_file_index(npz_index_path)
     parts = file_index[idx]
     return process_part(parts[0:4])[parts[-1]]
     
-def load_embeddings_mp(start_idx, end_idx, npz_index_path=SHUTTERSTOCK_NPZ_INDEX_PATH, basepath=SHUTTERSTOCK_NPZ_METACLIP_BASEPATH, n_processes=80):
+def load_embeddings_mp(start_idx, end_idx, npz_index_path=WEBDATASET_NPZ_INDEX_PATH, basepath=WEBDATASET_NPZ_METACLIP_BASEPATH, n_processes=80):
     """
     Loads embeddings in parallel from a specified index range using multiprocessing.
 
@@ -67,7 +67,7 @@ def load_embeddings_mp(start_idx, end_idx, npz_index_path=SHUTTERSTOCK_NPZ_INDEX
 def load_file_index(index_path):
     return np.load(index_path)['arr_0']
 
-def process_part(part_info, basepath=SHUTTERSTOCK_NPZ_METACLIP_BASEPATH):
+def process_part(part_info, basepath=WEBDATASET_NPZ_METACLIP_BASEPATH):
     embeddings = load_shard_part_npz(*part_info, basepath)
     return embeddings
 
@@ -76,7 +76,7 @@ def parts_from_idx_range(start_idx, end_idx, index_path='files_index.npz'):
     parts = index[start_idx:end_idx]
     return parts
 
-def fetch_and_normalize_embeddings(start, end, npz_index_path=SHUTTERSTOCK_NPZ_INDEX_PATH, basepath=SHUTTERSTOCK_NPZ_METACLIP_BASEPATH, n_processes=80, **kwargs):
+def fetch_and_normalize_embeddings(start, end, npz_index_path=WEBDATASET_NPZ_INDEX_PATH, basepath=WEBDATASET_NPZ_METACLIP_BASEPATH, n_processes=80, **kwargs):
     print(start, end )
     embeddings = load_embeddings_mp(start, end, npz_index_path=npz_index_path, basepath=basepath, n_processes=n_processes).astype('float32')
     indices = np.arange(start, start + embeddings.shape[0])
@@ -137,12 +137,12 @@ def init_index(
     return index, faiss_label
 
 
-def shutterstock_tar_path(shard_parts):
-    path = f'{SHUTTERSTOCK_PARENT_FOLDER}{SHUTTERSTOCK_FOLDER_PFX}_{shard_parts[0]}_{shard_parts[1]}_{shard_parts[2]}.csv/{shard_parts[3]:06}.tar'
+def webdataset_tar_path(shard_parts):
+    path = f'{WEBDATASET_PARENT_FOLDER}{WEBDATASET_FOLDER_PFX}_{shard_parts[0]}_{shard_parts[1]}_{shard_parts[2]}.csv/{shard_parts[3]:06}.tar'
     return path
 
-def shutterstock_image_from_parts(shard_parts):
-    url_base = shutterstock_tar_path(shard_parts)
+def webdataset_image_from_parts(shard_parts):
+    url_base = webdataset_tar_path(shard_parts)
     tar = tarfile.open(url_base)
     count = 0
     file_no = shard_parts[-1]

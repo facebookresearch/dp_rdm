@@ -117,7 +117,7 @@ data:
       params:
         k: 4
         n_patches_per_side: 1
-        nns: /private/home/lebensold/dev/private-augmented-retrieval/neighbors/1281166p-ClipImageRetriever_256@ImageNetTrain/ImageNetTrain/nn_paths.p
+        nns: /path/to/dp_rdm/neighbors/1281166p-ClipImageRetriever_256@ImageNetTrain/ImageNetTrain/nn_paths.p
         load_patches: false
         dset_config:
           target: rdm.data.imagenet.ImageNetTrain
@@ -129,7 +129,7 @@ data:
       params:
         k: 4
         n_patches_per_side: 1
-        nns: /private/home/lebensold/dev/private-augmented-retrieval/neighbors/1281166p-ClipImageRetriever_256@ImageNetTrain/ImageNetValidation/nn_paths.p
+        nns: /path/to/dp_rdm/neighbors/1281166p-ClipImageRetriever_256@ImageNetTrain/ImageNetValidation/nn_paths.p
         dset_config:
           target: rdm.data.imagenet.ImageNetValidation
           params:
