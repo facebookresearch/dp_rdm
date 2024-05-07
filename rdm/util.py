@@ -182,7 +182,7 @@ class BatchTrainer:
         print(f"Process group: {job_env.num_tasks} tasks, rank: {job_env.global_rank}")
 
 
-def get_shared_folder_aws(subfolder='laion_shard_jobs') -> Path:
+def get_shared_folder_aws(subfolder='shard_jobs') -> Path:
     user = os.getenv("USER")
     if Path(f"/data/home/{user}/checkpoint/").is_dir():
         p = Path(f"/data/home/{user}/checkpoint/{subfolder}")
@@ -191,7 +191,7 @@ def get_shared_folder_aws(subfolder='laion_shard_jobs') -> Path:
     raise RuntimeError("No shared folder available")
 
 
-def get_init_file_aws(subfolder='laion_shard_jobs'):
+def get_init_file_aws(subfolder='shard_jobs'):
     # Init file must not exist, but it's parent dir must exist.
     os.makedirs(str(get_shared_folder_aws(subfolder)), exist_ok=True)
     init_file = get_shared_folder_aws() / f"{uuid.uuid4().hex}_init"
@@ -201,7 +201,7 @@ def get_init_file_aws(subfolder='laion_shard_jobs'):
 
 
 
-def get_shared_folder(subfolder='laion_shard_jobs') -> Path:
+def get_shared_folder(subfolder='shard_jobs') -> Path:
     user = os.getenv("USER")
     if Path("/checkpoint/").is_dir():
         p = Path(f"/checkpoint/{user}/{subfolder}")
@@ -210,7 +210,7 @@ def get_shared_folder(subfolder='laion_shard_jobs') -> Path:
     raise RuntimeError("No shared folder available")
 
 
-def get_init_file(subfolder='laion_shard_jobs'):
+def get_init_file(subfolder='shard_jobs'):
     # Init file must not exist, but it's parent dir must exist.
     os.makedirs(str(get_shared_folder(subfolder)), exist_ok=True)
     init_file = get_shared_folder() / f"{uuid.uuid4().hex}_init"
