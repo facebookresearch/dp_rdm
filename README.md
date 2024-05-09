@@ -79,13 +79,8 @@ See `sample_generation.ipynb` for usage example.
 DP-RDM relies on a private retrieval dataset generated from metaclip embeddings. First, generate embeddings for the entire dataset using `wds_to_clip.py` as example code. Then you need to create a fast index with Faiss. See `wds_build_faiss.py` for example code.
 
 
-
 # RDM
-The code components of DP-RDM were built as an extension of Retrieval-Augmented Diffusion Models.
-
-[**Retrieval-Augmented Diffusion Models**](https://arxiv.org/abs/2204.11824)<br/>
-
-Our codebase depends on [Retrieval-Augmented Diffusion Models](https://github.com/CompVis/retrieval-augmented-diffusion-models).
+The core components of DP-RDM were built as an extension of [Retrieval-Augmented Diffusion Models](https://github.com/CompVis/retrieval-augmented-diffusion-models).
 
 ## BibTeX
 
