@@ -14,6 +14,12 @@ Text-to-image diffusion models tend to suffer from sample-level memorization, po
 conda activate dp_rdm
 ```
 
+2.1 Install remaining packages:
+```
+pip install albumentations opencv-python-headless
+pip install torch==1.13.1 torchvision==0.14.1
+```
+
 3. Download the first stage models:
 Download the first stage models using the following script:
 ```

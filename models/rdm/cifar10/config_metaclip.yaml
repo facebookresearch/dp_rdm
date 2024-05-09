@@ -2,6 +2,7 @@ model:
   base_learning_rate: 0.0001
   target: rdm.models.diffusion.ddpm.MinimalRETRODiffusion
   params:
+    normalized_embeddings: true
     k_nn: 4
     query_key: clip_img_emb
     linear_start: 0.0015
@@ -9,13 +10,13 @@ model:
     num_timesteps_cond: 1
     log_every_t: 200
     timesteps: 1000
-    first_stage_key: image
+    first_stage_key: jpeg
     cond_stage_key: nixda
     image_size: 64
     channels: 3
     cond_stage_trainable: false
     nn_key: nn_embeddings
-    nn_memory: nn_memory/oi_ffhq.p
+    ignore_keys: ['unconditional_guidance_vex']
     conditioning_key: retro_only
     monitor: val/loss_simple_ema
     scale_by_std: false
@@ -38,7 +39,7 @@ model:
         image_size: 64
         in_channels: 3
         out_channels: 3
-        model_channels: 224
+        model_channels: 192
         attention_resolutions:
         - 8
         - 4
@@ -48,7 +49,9 @@ model:
         - 1
         - 2
         - 3
-        - 4
+        - 5
+        use_scale_shift_norm: false
+        resblock_updown: false
         num_head_channels: 32
         use_spatial_transformer: true
         transformer_depth: 1
@@ -57,7 +60,6 @@ model:
     first_stage_config:
       target: ldm.models.autoencoder.VQModelInterface
       params:
-        ckpt_path: models/first_stage_models/vq-f4/model.ckpt
         embed_dim: 3
         n_embed: 8192
         ddconfig:
@@ -78,46 +80,50 @@ model:
           target: torch.nn.Identity
     retrieval_encoder_cfg:
       target: torch.nn.Identity
+    retrieval_cfg:
+      target: rdm.data.retrieval_dataset.dsetbuilder.DatasetBuilder
+      params:
+        patch_size: 256
+        batch_size: 100
+        k: 20
+        save: false
+        db_engine: faiss
+        num_workers: 24
+        img_size: [256,256]
+        gpu: true
+        load_patch_dataset: True
+        saved_embeddings: export/datasets/retrieval_datasets/Cifar10Train-ClipImageRetriever-256-metaclip
+        retriever_config:
+          target: rdm.modules.retrievers.ClipImageRetriever
+          params:
+            clip_type: open_clip
+            pretrained: models/metaclip/b16_400m.pt
+            model: ViT-B-16-quickgelu
+        data:
+          target: rdm.data.cifar10.Cifar10Train
+          params:
+            root: /datasets01/cifar-pytorch/11222017/
+            size: 256
+    public_retrieval_cfg:
+      target: rdm.data.retrieval_dataset.dsetbuilder.DatasetBuilder
+      params:
+        patch_size: 256
+        batch_size: 100
+        k: 20
+        save: false
+        db_engine: faiss
+        num_workers: 24
+        img_size: [256,256]
+        gpu: true
+        load_patch_dataset: True
+        searcher_savepath: searchers/imagenet_fb-1M-metaclip
+        saved_embeddings: export/datasets/retrieval_datasets/ImageNetFaceBlurred-Train-ClipImageRetriever-256-metaclip
+        retriever_config:
+          target: rdm.modules.retrievers.ClipImageRetriever
+          params:
+            clip_type: open_clip
+            pretrained: models/metaclip/b16_400m.pt
+            model: ViT-B-16-quickgelu
+        data:
+          target: rdm.data.imagenet.ImageNetTrainFaceBlurred
     cond_stage_config: __is_unconditional__
-data:
-  target: main.DataModuleFromConfig
-  params:
-    num_workers: 5
-    batch_size: 50
-    train:
-      target: rdm.data.base.QueryDataset
-      params:
-        k: 4
-        nns: <compute nearest neighbor, see README>
-        dset_config:
-          target: rdm.data.faces.FFHQTrainRDM
-          params:
-            size: 256
-    validation:
-      target: rdm.data.base.QueryDataset
-      params:
-        k: 4
-        nns: <compute nearest neighbor, see README>
-        dset_config:
-          target: rdm.data.faces.FFHQValidationRDM
-          params:
-            size: 256
-lightning:
-  callbacks:
-    image_logger:
-      target: main.ImageLogger
-      params:
-        log_on_batch_idx: True
-        batch_frequency: 500
-        max_images: 8
-        increase_log_steps: False
-
-    metrics_over_trainsteps_checkpoint:
-      target: pytorch_lightning.callbacks.ModelCheckpoint
-      params:
-        every_n_train_steps: 10000
-
-
-  trainer:
-    benchmark: True
-    num_sanity_val_steps: 0

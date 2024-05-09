@@ -170,5 +170,4 @@ out/
 neighbors/
 data/
 export/
-models/
 wandb/

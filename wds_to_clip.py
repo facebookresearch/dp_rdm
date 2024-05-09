@@ -28,12 +28,9 @@ def get_parser():
         description="RDM Retrieval-CLIP"
     )
     # npz path
-    parser.add_argument("--npz_path", default='/data/home/lebensold/checkpoint/webdataset_npz', type=str, help="")
+    parser.add_argument("--npz_path", default='/data/home/username/checkpoint/webdataset_npz', type=str, help="")
     parser.add_argument("--clip_pretrained", default="models/metaclip/b16_400m.pt", help="CLIP model to load", type=str)
-    # clip_type = clip
     parser.add_argument("--clip_type", default="open_clip", help="CLIP type", type=str)
-
-    # clip model = ViT-B/32
     parser.add_argument("--clip_model", default="ViT-B-16-quickgelu", help="CLIP type", type=str)
 
     parser.add_argument("--ngpus", default=1, type=int, help="Number of gpus to request on each node")
@@ -52,12 +49,9 @@ def get_parser():
 def init_dataset_loader(url_base):
     dataset = wds.DataPipeline(
         wds.SimpleShardList(url_base),
-        # at this point we have an iterator over all the shards
         wds.split_by_worker,
-        # at this point, we have an iterator over the shards assigned to each worker
         wds.tarfile_to_samples(),
         wds.decode("pilrgb"),
-        # at this point, we have an list of decompressed training samples from each shard in this worker in sequence
         wds.to_tuple("jpg", "__url__", "__key__"),
         wds.map_tuple(preproc,),
         wds.batched(WDS_BATCH_SIZE)

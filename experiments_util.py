@@ -13,16 +13,7 @@ from matplotlib import pyplot as plt
 from scipy import optimize
 import cv2
 
-DEFAULT_PATH = "/private/home/lebensold/dev/private-augmented-retrieval/models/rdm/imagenet/model.ckpt"
-
-METACLIP_FB_NO_AGG_SIG0_PATH = "/checkpoint/lebensold/rdm/21273397/2023-12-16T04-49-43_rdm_in64fb_sig0_noagg_mclip_norm/checkpoints/last.ckpt"
-METACLIP_FB_AGG_SIG01_PATH = "/checkpoint/lebensold/rdm/21273398/2023-12-16T04-49-45_rdm_in64fb_sig0.1_agg_mclip_norm/checkpoints/last.ckpt"
-MODEL_DPRDM_ADAPT005_PATH = "/checkpoint/lebensold/rdm_aggsig005_last.ckpt"
-MODEL_DPRDM_ADAPT005_NEW_PATH = "/checkpoint/lebensold/rdm_aggsig005_last.new.ckpt"
-MODEL_DPRDM_ADAPT001_PATH = "/checkpoint/lebensold/rdm_aggsig001_last.ckpt"
-MODEL_DPRDM_ADAPT01_PATH = "/checkpoint/lebensold/rdm_aggsig01_last.ckpt"
-MODEL_DPRDM_PATH = "/checkpoint/lebensold/rdm_no_agg_last.ckpt"
-
+DEFAULT_PATH = "models/rdm/imagenet/model.ckpt"
 
 # Retrieval Dataset Configuration
 RETRIEVAL_DB_MSCOCO_FACEBLURRED_METACLIP = (
@@ -113,27 +104,6 @@ cfg_map = {
     RETRIEVAL_DB_IMAGENET_METACLIP: "ImageNet FB"
 }
 
-
-def exp_type(ckpt_path, config_path, aggregate, **kwargs):
-    agg = "" if aggregate else "(No Agg)"
-    if ckpt_path == DEFAULT_PATH:
-        return f"{cfg_map[config_path]}, {agg} (CLIP)"
-    if ckpt_path == MODEL_DPRDM_PATH:
-        return f"{cfg_map[config_path]} {agg} (RDM-fb)"
-    if ckpt_path == MODEL_DPRDM_ADAPT01_PATH:
-        return f"{cfg_map[config_path]} {agg} (DP-RDM-0.1)"
-    
-    if ckpt_path == MODEL_DPRDM_ADAPT001_PATH:
-        return f"{cfg_map[config_path]} {agg} (DP-RDM-0.01)"
-    
-    if ckpt_path == MODEL_DPRDM_ADAPT005_PATH:
-        return f"{cfg_map[config_path]} {agg} (DP-RDM-0.05)"
-    
-    if ckpt_path == MODEL_DPRDM_ADAPT005_NEW_PATH:
-        return f"{cfg_map[config_path]} {agg} (DP-RDM-0.05.n)"
-    
-    return ckpt_path
-
 # Privacy Analysis
 def calc_eps(sigma, subsample_rate, knn, n_queries, delta):
     """
@@ -193,87 +163,8 @@ def find_q(epsilon, k, sigma, n_queries, N):
     f = lambda q: calc_eps(sigma, q, k, n_queries, delta=1/N)[0]
     return binary_search(f, 0, 1, epsilon)
 
-def find_sigma(epsilon, q, k, n_queries, N):
-    eps_f = partial(calc_eps,
-        subsample_rate=q,
-        knn=k,
-        n_queries=n_queries,
-        delta=1/N,
-    )
-
-    def f(sigma):
-        return epsilon - eps_f(sigma)[0]
-
-    sigma = optimize.brentq(f, 0.0, 120)
-    return sigma
 
 # Experiment Mapping
-def set_model_prefix_and_config_path(ckpt, retrieval_db_name, **kwargs):
-    config_path = None
-    pfx = _get_pfx(retrieval_db_name, ckpt)
-    if retrieval_db_name == RETRIEVAL_DBNAME_MSCOCO_FACEBLURRED:
-        return pfx, RETRIEVAL_DB_MSCOCO_FACEBLURRED_METACLIP
-
-    if retrieval_db_name == RETRIEVAL_DBNAME_SHUTTERSTOCK:
-        return pfx, RETRIEVAL_DB_SHUTTERSTOCK
-    
-    if retrieval_db_name == RETRIEVAL_DBNAME_IMAGENET_FACEBLURRED:
-        return pfx, RETRIEVAL_DB_IMAGENET_METACLIP
-
-
-    if retrieval_db_name == RETRIEVAL_DBNAME_CIFAR10:
-        config_path = RETRIEVAL_DB_CIFAR10
-        if ckpt == DEFAULT_PATH:
-            pfx = f"{retrieval_db_name}_default"
-            config_path = RETRIEVAL_DB_CIFAR10_CLIP
-
-    if retrieval_db_name == RETRIEVAL_DBNAME_MSCOCO:
-        config_path = RETRIEVAL_DB_MSCOCO_METACLIP
-        if ckpt == DEFAULT_PATH:
-            pfx = f"{retrieval_db_name}_default"
-            config_path = RETRIEVAL_DB_MSCOCO_CLIP
-
-    return pfx, config_path
-
-
-def _get_pfx(retrieval_db_name, ckpt):
-    if ckpt == METACLIP_FB_AGG_SIG01_PATH:
-        return f"{retrieval_db_name}_agg0.1"
-    if ckpt == METACLIP_FB_NO_AGG_SIG0_PATH:
-        return f"{retrieval_db_name}_noagg"
-    if ckpt == MODEL_DPRDM_ADAPT01_PATH:
-        return f"{retrieval_db_name}_dprdm.adapt01"
-    if ckpt == MODEL_DPRDM_ADAPT001_PATH:
-        return f"{retrieval_db_name}_dprdm.adapt001"
-    if ckpt == MODEL_DPRDM_ADAPT005_NEW_PATH:
-        return f"{retrieval_db_name}_dprdm.adapt005.n"
-    if ckpt == MODEL_DPRDM_ADAPT005_PATH:
-        return f"{retrieval_db_name}_dprdm.adapt005"
-    if ckpt == MODEL_DPRDM_PATH:
-        return f"{retrieval_db_name}_dprdm.concat"
-    return None
-
-
-def model_path_to_pfx(path):
-    if path == METACLIP_FB_NO_AGG_SIG0_PATH:
-        return "metaclip_noagg_sig0"
-    if path == METACLIP_FB_AGG_SIG01_PATH:
-        return "metaclip_agg_sig0.1"
-    if path == MODEL_DPRDM_PATH:
-        return "metaclip_dprdm.concat"
-    if path == MODEL_DPRDM_ADAPT01_PATH:
-        return "metaclip_dprdm.adapt01"
-    if path == MODEL_DPRDM_ADAPT001_PATH:
-        return "metaclip_dprdm.adapt001"
-    if path == MODEL_DPRDM_ADAPT005_PATH:
-        return "metaclip_dprdm.adapt005"
-    if path == MODEL_DPRDM_ADAPT005_NEW_PATH:
-        return "metaclip_dprdm.adapt005.n"
-    if path == DEFAULT_PATH:
-        return "clip_default"
-    assert "undefined", path
-
-
 def dataset_from_config(path):
     if "cifar10" in path:
         return RETRIEVAL_DBNAME_CIFAR10
@@ -302,4 +193,3 @@ def ds_size_from_config(path):
     if "cifar10" in path:
         return N_CIFAR10
     return 0
-
