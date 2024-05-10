@@ -1,0 +1,24 @@
+data:
+  target: main.DataModuleFromConfig
+  params:
+    num_workers: 0
+    batch_size: 5
+    train:
+      target: rdm.data.base.QueryDataset
+      params:
+        k: 20
+        dset_config:
+          target: rdm.data.cifar10.Cifar10Train
+          params:
+            root: /datasets01/cifar-pytorch/11222017/
+            size: 256
+    validation:
+      target: rdm.data.base.QueryDataset
+      params:
+        k: 20
+        dset_config:
+          target: rdm.data.cifar10.Cifar10Validation
+          params:
+            root: /datasets01/cifar-pytorch/11222017/
+            size: 256
+    

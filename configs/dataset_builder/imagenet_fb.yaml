@@ -1,0 +1,26 @@
+builder:
+  target: rdm.data.retrieval_dataset.dsetbuilder.DatasetBuilder
+  params:
+    patch_size: 256
+    batch_size: 100
+    k: 20
+    save: True
+    num_workers: 24
+    img_size: [256,256]
+    gpu: True
+    patch_sampling: aligned
+    db_engine: faiss
+    saved_embeddings: configs/export/datasets/retrieval_datasets/ImageNetFaceBlurred-Train-ClipImageRetriever-256-metaclip
+    retriever_config:
+      target: rdm.modules.retrievers.ClipImageRetriever
+      params:
+        clip_type: open_clip
+        pretrained: models/metaclip/b16_400m.pt
+        model: ViT-B-16-quickgelu
+        # model: ViT-B/32
+        # device: cuda
+
+    # the source for the retrieval dataset
+    data:
+      target: rdm.data.imagenet.ImageNetTrainFaceBlurred
+      params: {}

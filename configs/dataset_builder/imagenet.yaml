@@ -1,0 +1,21 @@
+builder:
+  target: rdm.data.retrieval_dataset.dsetbuilder.DatasetBuilder
+  params:
+    patch_size: 256
+    batch_size: 100
+    k: 20
+    save: True
+    num_workers: 24
+    img_size: [256,256]
+    gpu: True
+    patch_sampling: aligned
+    retriever_config:
+      target: rdm.modules.retrievers.ClipImageRetriever
+      params:
+        model: ViT-B/32
+        device: cuda
+
+    # the source for the retrieval dataset
+    data:
+      target: rdm.data.imagenet.ImageNetTrain
+      params: {}
